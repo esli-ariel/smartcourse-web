@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Http;
+use League\CommonMark\CommonMarkConverter;
+
 
 class CourseController extends Controller
 {
