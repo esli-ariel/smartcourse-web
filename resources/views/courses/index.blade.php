@@ -102,9 +102,9 @@
                 📝 Résumé
             </h3>
 
-            <div class="mt-3 whitespace-pre-line text-gray-700">
-                {{ $course->summary }}
-            </div>
+           <div class="prose prose-indigo max-w-none">
+    {!! (new \League\CommonMark\CommonMarkConverter())->convert($course->summary)->getContent() !!}
+</div>
 
         </div>
 
