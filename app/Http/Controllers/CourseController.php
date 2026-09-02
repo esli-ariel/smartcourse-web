@@ -7,6 +7,7 @@ use App\Models\Course;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Smalot\PdfParser\Parser;
+use Illuminate\Support\Facades\Http;
 
 class CourseController extends Controller
 {
@@ -69,5 +70,59 @@ class CourseController extends Controller
     return redirect()
         ->route('courses.index')
         ->with('success', 'Cours téléversé et texte extrait avec succès.');
-}                                                                                                                                                                                                                                                                                                                                                                                                                     
+}
+
+public function summarize(Course $course)
+{
+    // Vérifier que le cours appartient bien à l'utilisateur connecté
+    if ($course->user_id !== Auth::id()) {
+        abort(403);
+    }
+
+    // Vérifier qu'un texte a bien été extrait
+    if (empty($course->content)) {
+        return back()->with(
+            'error',
+            'Impossible de générer le résumé : le contenu du cours est vide.'
+        );
+    }
+
+    try {
+
+        $response = Http::timeout(120)
+            ->post(
+                config('services.ai_service.url') . '/api/summarize',
+                [
+                    'text' => $course->content,
+                ]
+            );
+
+        if ($response->failed()) {
+
+            return back()->with(
+                'error',
+                'Le service IA a rencontré une erreur.'
+            );
+        }
+
+        $data = $response->json();
+
+        // Enregistrer le résumé dans la base de données
+        $course->update([
+            'summary' => $data['summary'] ?? null,
+        ]);
+
+        return back()->with(
+            'success',
+            'Résumé généré avec succès !'
+        );
+
+    } catch (\Exception $e) {
+
+        return back()->with(
+            'error',
+            'Impossible de contacter le service IA.'
+        );
+    }
+}
 }

@@ -18,11 +18,17 @@
     <div class="py-10">
         <div class="mx-auto max-w-6xl px-6">
 
-            @if (session('success'))
-                <div class="mb-6 rounded-xl bg-green-50 p-4 text-green-700">
-                    {{ session('success') }}
-                </div>
-            @endif
+            @if(session('success'))
+    <div class="mb-6 rounded-lg bg-green-100 p-4 text-green-800">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="mb-6 rounded-lg bg-red-100 p-4 text-red-800">
+        {{ session('error') }}
+    </div>
+@endif
 
             @if ($courses->isEmpty())
 
@@ -73,7 +79,36 @@
                                 Ajouté le
                                 {{ $course->created_at->format('d/m/Y') }}
                             </p>
+                            <div class="mt-4">
+                                <form
+                                    action="{{ route('courses.summarize', $course) }}"
+                                    method="POST"
+                                >
+                                @csrf
 
+                                    <button
+                                    type="submit"
+                                    class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                                    >
+                                    🤖 Générer le résumé
+                                </button>
+                            </form>
+                            </div>
+                            @if($course->summary)
+
+        <div class="mt-6 rounded-lg bg-gray-50 p-4">
+
+            <h3 class="font-semibold text-gray-900">
+                📝 Résumé
+            </h3>
+
+            <div class="mt-3 whitespace-pre-line text-gray-700">
+                {{ $course->summary }}
+            </div>
+
+        </div>
+
+    @endif
                         </div>
 
                     @endforeach

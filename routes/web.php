@@ -29,5 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/courses', [CourseController::class, 'store'])
         ->name('courses.store');
 
+    Route::post('/courses/{course}/summarize', [CourseController::class, 'summarize'])
+    ->name('courses.summarize');
+
 });
 require __DIR__.'/auth.php';
