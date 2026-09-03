@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -31,6 +31,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/courses/{course}/summarize', [CourseController::class, 'summarize'])
     ->name('courses.summarize');
+
+    Route::get('/courses/{course}', [CourseController::class, 'show'])
+    ->name('courses.show');
 
 });
 require __DIR__.'/auth.php';

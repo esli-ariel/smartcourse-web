@@ -127,4 +127,13 @@ public function summarize(Course $course)
         );
     }
 }
+
+    public function show(Course $course)
+{
+    if ($course->user_id !== Auth::id()) {
+        abort(403);
+    }
+
+    return view('courses.show', compact('course'));
+}
 }

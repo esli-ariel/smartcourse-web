@@ -1,100 +1,278 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
+<nav
+    x-data="{ open: false }"
+    class="border-b border-gray-100 bg-white/95 shadow-sm backdrop-blur"
+>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
+        <div class="flex h-20 items-center justify-between">
+
+            {{-- Logo SmartCourse --}}
+            <div class="flex items-center">
+
+                <a
+                    href="{{ route('courses.index') }}"
+                    class="flex items-center gap-3"
+                >
+
+                    {{-- Icône --}}
+                    <div
+                        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-xl text-white shadow-sm"
+                    >
+                        🎓
+                    </div>
+
+                    {{-- Nom --}}
+                    <div class="hidden sm:block">
+
+                        <div class="text-lg font-extrabold tracking-tight text-gray-900">
+                            Smart<span class="text-indigo-600">Course</span>
+                        </div>
+
+                        <div class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                            Learn smarter
+                        </div>
+
+                    </div>
+
+                </a>
+
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
 
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
+            {{-- Navigation desktop --}}
+            <div class="hidden items-center gap-2 md:flex">
+
+                {{-- Mes cours --}}
+                <a
+                    href="{{ route('courses.index') }}"
+                    class="{{ request()->routeIs('courses.index')
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}
+                        inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition"
+                >
+                    <span>📚</span>
+                    Mes cours
+                </a>
+
+
+                {{-- Ajouter un cours --}}
+                <a
+                    href="{{ route('courses.create') }}"
+                    class="{{ request()->routeIs('courses.create')
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}
+                        inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition"
+                >
+                    <span>＋</span>
+                    Ajouter un cours
+                </a>
+
+            </div>
+
+
+            {{-- Partie droite --}}
+            <div class="hidden items-center gap-4 md:flex">
+
+            {{-- Bouton thème --}}
+<div
+    x-data="themeSwitcher"
+    class="flex items-center"
+>
+    <button
+        type="button"
+        @click="toggle()"
+        class="flex h-10 w-10 items-center justify-center rounded-xl text-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+        :title="dark ? 'Activer le mode clair' : 'Activer le mode sombre'"
+    >
+
+        <span x-show="!dark">
+            🌙
+        </span>
+
+        <span x-show="dark">
+            ☀️
+        </span>
+
+    </button>
+</div>
+                {{-- Séparateur --}}
+                <div class="h-8 w-px bg-gray-200"></div>
+
+
+                {{-- Utilisateur --}}
+                <div class="flex items-center gap-3">
+
+                    {{-- Avatar --}}
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-700"
+                    >
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+
+
+                    {{-- Nom --}}
+                    <div class="hidden lg:block">
+
+                        <p class="max-w-[150px] truncate text-sm font-semibold text-gray-800">
+                            {{ Auth::user()->name }}
+                        </p>
+
+                        <p class="text-xs text-gray-400">
+                            Étudiant
+                        </p>
+
+                    </div>
+
+
+                    {{-- Déconnexion --}}
+                    <form
+                        method="POST"
+                        action="{{ route('logout') }}"
+                    >
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            title="Se déconnecter"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                        >
+                            ↪
                         </button>
-                    </x-slot>
 
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
+                    </form>
 
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+                </div>
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+
+            {{-- Bouton mobile --}}
+            <div class="flex md:hidden">
+
+                <button
+                    @click="open = ! open"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+                >
+
+                    <svg
+                        class="h-6 w-6"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+
+                        <path
+                            x-show="!open"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+
+                        <path
+                            x-show="open"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+
                     </svg>
+
                 </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+        </div>
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+
+        {{-- Menu mobile --}}
+        <div
+            x-show="open"
+            x-transition
+            class="border-t border-gray-100 py-4 md:hidden"
+        >
+
+            <div class="space-y-2">
+
+                {{-- Mes cours --}}
+                <a
+                    href="{{ route('courses.index') }}"
+                    class="{{ request()->routeIs('courses.index')
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-gray-600 hover:bg-gray-50' }}
+                        flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+                >
+                    <span>📚</span>
+                    Mes cours
+                </a>
+
+
+                {{-- Ajouter --}}
+                <a
+                    href="{{ route('courses.create') }}"
+                    class="{{ request()->routeIs('courses.create')
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-gray-600 hover:bg-gray-50' }}
+                        flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+                >
+                    <span>＋</span>
+                    Ajouter un cours
+                </a>
+
+            </div>
+
+
+            {{-- Utilisateur mobile --}}
+            <div class="mt-4 border-t border-gray-100 pt-4">
+
+                <div class="flex items-center gap-3 px-4">
+
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-700"
+                    >
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+
+                    <div>
+
+                        <p class="text-sm font-semibold text-gray-800">
+                            {{ Auth::user()->name }}
+                        </p>
+
+                        <p class="text-xs text-gray-400">
+                            Étudiant
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {{-- Déconnexion mobile --}}
+                <form
+                    method="POST"
+                    action="{{ route('logout') }}"
+                    class="mt-3"
+                >
+
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                    <button
+                        type="submit"
+                        class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                    >
+                        <span>↪</span>
+                        Se déconnecter
+                    </button>
+
                 </form>
+
             </div>
+
         </div>
+
     </div>
+
 </nav>
